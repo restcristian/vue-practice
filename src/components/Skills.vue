@@ -2,12 +2,22 @@
   <div class="hello">
     <div class="holder">
       <form v-on:submit.prevent="addSkill">
-        <input type="text" placeholder="Enter a skill you have.." v-model="skill">
+        <input type="text" placeholder="Enter a skill you have.." v-model="skill" v-validate="'min:5'" name="skill">
+
+        <transition name="alert-in" enter-active-class="animated flipInX" leave-active-class="animated flipOutX">
+          <p class="alert" v-if="errors.has('skill')">
+            {{errors.first('skill')}}
+          </p>
+        </transition>
+
       </form>
       <ul>
-        <li v-for="(data, index) in skills" v-bind:key="index">
-          {{data.skill}}
-        </li>
+        <transition-group name="list" enter-active-class="animated bounceInUp" leave-active-class="animated bounceOutDown">
+          <li v-for="skill in skills" v-bind:key="skill.id">
+            {{skill.skill}}
+          </li>
+        </transition-group>
+
       </ul>
       <p>These are the skills that you have.</p>
     </div>
@@ -15,21 +25,31 @@
 </template>
 
 <script>
+
+
   export default {
     name: 'Skills',
     data() {
       return {
         skills: [
-          { skill: "Vue.js" },
-          { skill: "Frontend Developer" },
+          { id:0,skill: "Vue.js" },
+          { id:1,skill: "Frontend Developer" },
         ],
         skill: '',
       }
     },
     methods: {
       addSkill() {
-        this.skills.push({ skill: this.skill });
-        this.skill = '';
+        this.$validator.validateAll().then((result) => {
+          if (result && this.skill.trim().length !== 0) {
+            const newSkill = {id:this.skills.length,skill: this.skill};
+            this.skills.push(newSkill);
+            this.skill = '';
+          } else {
+            console.log('Not valid');
+          }
+        });
+
       }
     }
 
@@ -38,6 +58,8 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  @import 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css';
+
   .holder {
     background: #fff;
   }
@@ -75,5 +97,35 @@
     font-size: 1.3em;
     background-color: #323333;
     color: #687F7f;
+  }
+
+  .alert {
+    background: #fdf2ce;
+    font-weight: bold;
+    display: inline-block;
+    padding: 5px;
+    margin-top: -20px;
+  }
+
+  .alert-in-enter-active {
+    animation: bounce-in .5s;
+  }
+
+  .alert-in-leave-active {
+    animation: bounce-in .5s reverse;
+  }
+
+  @keyframes bounce-in {
+    0% {
+      transform: scale(0)
+    }
+
+    50% {
+      transform: scale(1.5)
+    }
+
+    100% {
+      transform: scale(1)
+    }
   }
 </style>
