@@ -1,5 +1,5 @@
 <template>
-  <div class="hello">
+  <div class="skills page">
     <div class="holder">
       <form v-on:submit.prevent="addSkill">
         <input type="text" placeholder="Enter a skill you have.." v-model="skill" v-validate="'min:5'" name="skill">
@@ -13,8 +13,9 @@
       </form>
       <ul>
         <transition-group name="list" enter-active-class="animated bounceInUp" leave-active-class="animated bounceOutDown">
-          <li v-for="skill in skills" v-bind:key="skill.id">
-            {{skill.skill}}
+          <li v-for="(data, index) in skills" v-bind:key="data.id">
+            {{data.skill}}
+            <i class = "fa fa-minus-circle" v-on:click="remove(index)"></i>
           </li>
         </transition-group>
 
@@ -50,6 +51,9 @@
           }
         });
 
+      },
+      remove(index){
+        this.skills.splice(index, 1);
       }
     }
 
@@ -58,7 +62,8 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  @import 'https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css';
+
+  @import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css';
 
   .holder {
     background: #fff;
@@ -127,5 +132,10 @@
     100% {
       transform: scale(1)
     }
+  }
+
+  i{
+    float:right;
+    cursor: pointer;
   }
 </style>
